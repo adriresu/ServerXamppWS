@@ -5,44 +5,37 @@ $dbConn =  connect($db);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST')
 {
-  if (isset($_POST["username"])){
-    echo "<h1>VARIABLES TIPO POST</h1>";
-  }
-  else if (isset($_GET['Tipo'])){
-    echo "<h1>VARIABLES TIPO GET</h1>";
-  }
-  else{
-    echo "<h1>ESTO ES UNA MIERDA</h1>";
-  }
-
-  if (isset($_GET['Tipo'])){
-    if (isset($_GET['username']) && isset($_GET['password']))
+  if ($_POST['Tipo'] == 'Login'){
+    if (isset($_POST['username']) && isset($_POST['password']))
     {
-      $flag = FALSE;
       //Mostrar un post
       $sql = $dbConn->prepare("SELECT Usuario, Contrasenha FROM usuario WHERE Usuario=:usuario AND Contrasenha=:contrasenha");
-      $sql->bindValue(':usuario', $_GET['username']);
-      $sql->bindValue(':contrasenha', $_GET['password']);
+      $sql->bindValue(':usuario', $_POST['username']);
+      $sql->bindValue(':contrasenha', $_POST['password']);
       $sql->execute();
 
       header("HTTP/1.1 200 OK");
       $dataReceived = $sql->fetchAll(PDO::FETCH_ASSOC);
 
       if (count($dataReceived) > 0) {
-        $flag = TRUE;
+        $response = array('response' => 'True');
       }
-      if ($flag) {
-        return TRUE;
+      else{
+        $response = array('response' => $_POST['password']);
       }
-      
+      echo json_encode($response);
       exit();
 	  }
+    else{
+      $response->response = 'False';
+      echo json_encode($response);
+    }
 
   }
-  else if($_GET['Tipo'] == 'Register'){
+  else if($_POST['Tipo'] == 'Register'){
 
   }
-  else if($_GET['Tipo'] == 'GetSeries'){
+  else if($_POST['Tipo'] == 'GetSeries'){
 
   }
 
