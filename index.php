@@ -33,11 +33,53 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 
   }
   else if($_POST['Tipo'] == 'Register'){
+    if (isset($_POST['name']) && isset($_POST['surname']) && isset($_POST['username']) && isset($_POST['password']) && isset($_POST['email'])) {
+      $sql = $dbConn->prepare("INSERT INTO usuario(Rol, Nombre, Apellidos, Correo, Usuario, Contrasenha) VALUES (1,:name,:surname,:email,:username,:password)");
+      $sql->bindValue(':name', $_POST['name']);
+      $sql->bindValue(':surname', $_POST['surname']);
+      $sql->bindValue(':username', $_POST['username']);
+      $sql->bindValue(':password', $_POST['password']);
+      $sql->bindValue(':email', $_POST['password']);
+      $sql->execute();
+
+      header("HTTP/1.1 200 OK");
+      $dataReceived = $sql->fetchAll(PDO::FETCH_ASSOC);
+
+      if (count($dataReceived) > 0) {
+        $response = array('response' => 'True');
+      }
+      else{
+        $response = array('response' => 'False');
+      }
+      echo json_encode($response);
+      exit();
+    }
+    else{
+      $response->response = 'False';
+      echo json_encode($response);
+    }
 
   }
-  else if($_POST['Tipo'] == 'GetSeries'){
-
+  else if($_POST['Tipo'] == 'Series'){
+    $sql = $dbConn->prepare("SELECT * FROM serie");
+    $sql->execute();
+    header("HTTP/1.1 200 OK");
+    $dataReceived = $sql->fetchAll(PDO::FETCH_ASSOC);
+    if (count($dataReceived) > 0) {
+      echo json_encode($dataReceived);
+    }
   }
+  elseif ($_POST['Tipo'] == 'SerieInfo') {
+    $sql = $dbConn->prepare("SELECT * FROM serie WHERE ID=:id");
+    $sql->bindValue(':id', $_POST['id']);
+    $sql->execute();
+    header("HTTP/1.1 200 OK");
+    $dataReceived = $sql->fetchAll(PDO::FETCH_ASSOC);
+    if (count($dataReceived) > 0) {
+      echo json_encode($dataReceived);
+    }
+  }
+  
 
   else {
     //Mostrar lista de post
