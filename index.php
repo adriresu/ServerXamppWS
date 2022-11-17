@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
         $response = array('response' => 'True');
       }
       else{
-        $response = array('response' => $_POST['password']);
+        $response = array('response' => 'False');
       }
       echo json_encode($response);
       exit();
@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
       $sql->bindValue(':surname', $_POST['surname']);
       $sql->bindValue(':username', $_POST['username']);
       $sql->bindValue(':password', $_POST['password']);
-      $sql->bindValue(':email', $_POST['password']);
+      $sql->bindValue(':email', $_POST['email']);
       $sql->execute();
 
       header("HTTP/1.1 200 OK");
@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
         $response = array('response' => 'True');
       }
       else{
-        $response = array('response' => 'False');
+        $response = array('response' => 'True');
       }
       echo json_encode($response);
       exit();
@@ -71,6 +71,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
   }
   elseif ($_POST['Tipo'] == 'SerieInfo') {
     $sql = $dbConn->prepare("SELECT * FROM serie WHERE ID=:id");
+    $sql->bindValue(':id', $_POST['id']);
+    $sql->execute();
+    header("HTTP/1.1 200 OK");
+    $dataReceived = $sql->fetchAll(PDO::FETCH_ASSOC);
+    if (count($dataReceived) > 0) {
+      echo json_encode($dataReceived);
+    }
+  }
+  elseif ($_POST['Tipo'] == 'SerieInfoCharacter') {
+    $sql = $dbConn->prepare("SELECT * FROM personaje WHERE ID_serie=:id");
+    $sql->bindValue(':id', $_POST['id']);
+    $sql->execute();
+    header("HTTP/1.1 200 OK");
+    $dataReceived = $sql->fetchAll(PDO::FETCH_ASSOC);
+    if (count($dataReceived) > 0) {
+      echo json_encode($dataReceived);
+    }
+  }
+  elseif ($_POST['Tipo'] == 'CharacterInfo') {
+    $sql = $dbConn->prepare("SELECT * FROM personaje WHERE ID=:id");
     $sql->bindValue(':id', $_POST['id']);
     $sql->execute();
     header("HTTP/1.1 200 OK");
